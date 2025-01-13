@@ -179,7 +179,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Recomendador de Juegos</h1>
+    <h1>PlayPal</h1>
     <p>Selecciona tu estado de ánimo y preferencias para recibir recomendaciones de juegos.</p>
 
     <label for="mood">¿Cómo te sientes hoy?</label><br>
@@ -205,7 +205,7 @@
   </div>
 
   <footer>
-    <p>© 2025 Recomendador de Juegos. Todos los derechos reservados.</p>
+    <p>© 2025 PlayPal. Todos los derechos reservados.</p>
     <p>Datos proporcionados por <a href="https://rawg.io/" target="_blank">RAWG.io</a></p>
     <button id="feedbackButton">Contanos cómo mejorar</button>
   </footer>
@@ -223,100 +223,49 @@
     ¡Gracias por tu recomendación! Intentaremos mejorar para la próxima.
   </div>
 
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script>
-    let currentPage = 1; // Estado inicial de la página
+    // Inicializa EmailJS
+    emailjs.init("wS-6dQkyfuF1njWvO");
 
-    document.getElementById('recommendButton').addEventListener('click', async () => {
-      const mood = document.getElementById('mood').value;
-      const genre = document.getElementById('genre').value;
-
-      const apiKey = '292f3ba4d2294c798bbf1ffe887d450a';
-      const baseUrl = `https://api.rawg.io/api/games?key=${apiKey}&tags=${mood},${genre}&page_size=5`;
-
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = 'Buscando tus recomendaciones... ⚔️';
-
-      currentPage = 1; // Reiniciar la página al hacer una nueva consulta
-
-      await fetchGames(baseUrl, resultsDiv);
-    });
-
-    async function fetchGames(baseUrl, resultsDiv) {
-      try {
-        const url = `${baseUrl}&page=${currentPage}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.results && data.results.length > 0) {
-          const today = new Date();
-
-          resultsDiv.innerHTML = data.results
-            .filter(game => game.released && new Date(game.released) <= today) // Filtrar juegos lanzados
-            .map(game => `
-              <div class="game-card">
-                <img src="${game.background_image}" alt="Portada de ${game.name}">
-                <div class="game-info">
-                  <p><strong>${game.name}</strong></p>
-                  <p>Plataformas: ${game.platforms.map(p => p.platform.name).join(', ')}</p>
-                </div>
-              </div>
-            `).join('');
-
-          const followUpDiv = document.createElement('div');
-          followUpDiv.innerHTML = `
-            <button id="moreOptionsButton">Más opciones</button>
-          `;
-          resultsDiv.appendChild(followUpDiv);
-
-          // Añadir evento al botón de más opciones
-          document.getElementById('moreOptionsButton').addEventListener('click', async () => {
-            currentPage++; // Incrementar la página para obtener nuevos resultados
-            await fetchGames(baseUrl, resultsDiv);
-          });
-        } else {
-          resultsDiv.innerHTML = 'No se encontraron juegos con esas características. Intenta con menos filtros.';
-        }
-      } catch (error) {
-        resultsDiv.innerHTML = 'Error al conectar con el servidor. Por favor, intenta nuevamente.';
-      }
-    }
-
-    // Modal para retroalimentación
-    const feedbackButton = document.getElementById('feedbackButton');
-    const feedbackModal = document.getElementById('feedbackModal');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const closeModalButton = document.getElementById('closeModalButton');
-    const sendFeedbackButton = document.getElementById('sendFeedbackButton');
-    const thankYouMessage = document.getElementById('thankYouMessage');
-
-    feedbackButton.addEventListener('click', () => {
-      feedbackModal.style.display = 'block';
-      modalOverlay.style.display = 'block';
-    });
-
-    closeModalButton.addEventListener('click', () => {
-      feedbackModal.style.display = 'none';
-      modalOverlay.style.display = 'none';
-    });
-
-    modalOverlay.addEventListener('click', () => {
-      feedbackModal.style.display = 'none';
-      modalOverlay.style.display = 'none';
-    });
-
-    sendFeedbackButton.addEventListener('click', () => {
+    document.getElementById('sendFeedbackButton').addEventListener('click', function () {
       const feedback = document.getElementById('feedbackInput').value;
+
       if (feedback.trim()) {
-        feedbackModal.style.display = 'none';
-        modalOverlay.style.display = 'none';
-        document.getElementById('feedbackInput').value = '';
-        thankYouMessage.style.display = 'block';
-        setTimeout(() => {
-          thankYouMessage.style.display = 'none';
-        }, 5000);
+        const templateParams = {
+          message: feedback, // Variable para la plantilla
+        };
+
+        emailjs.send('service_jiwor6a', 'template_54yl3u7', templateParams)
+          .then(() => {
+            document.getElementById('feedbackInput').value = '';
+            document.getElementById('thankYouMessage').style.display = 'block';
+            setTimeout(() => {
+              document.getElementById('thankYouMessage').style.display = 'none';
+            }, 5000);
+          })
+          .catch((error) => {
+            alert('Error al enviar la sugerencia. Intenta nuevamente.');
+            console.error('EmailJS error:', error);
+          });
       } else {
         alert('Por favor, escribe una sugerencia antes de enviar.');
       }
+    });
+
+    document.getElementById('feedbackButton').addEventListener('click', function () {
+      document.getElementById('feedbackModal').style.display = 'block';
+      document.getElementById('modalOverlay').style.display = 'block';
+    });
+
+    document.getElementById('closeModalButton').addEventListener('click', function () {
+      document.getElementById('feedbackModal').style.display = 'none';
+      document.getElementById('modalOverlay').style.display = 'none';
+    });
+
+    document.getElementById('modalOverlay').addEventListener('click', function () {
+      document.getElementById('feedbackModal').style.display = 'none';
+      document.getElementById('modalOverlay').style.display = 'none';
     });
   </script>
 </body>

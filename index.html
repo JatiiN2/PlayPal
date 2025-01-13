@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlayPal</title>
+  <style>
+    /* Fuentes y colores inspirados en RAWG */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1e1e1e;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #ff9800;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.1em;
+      color: #d4d4d4;
+    }
+
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(90deg, #ff9800, #ff5722);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .results {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #2a2a2a;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-card {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+      background: #333;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .game-card img {
+      width: 100px;
+      height: auto;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+
+    .game-card .game-info {
+      flex: 1;
+    }
+
+    select {
+      padding: 10px;
+      margin: 10px 0;
+      background-color: #1e1e1e;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    select option {
+      background: #1e1e1e;
+      color: #fff;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding: 20px;
+      background: #1e1e1e;
+      color: #fff;
+      text-align: center;
+    }
+
+    footer a {
+      color: #ff9800;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .modal textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #1e1e1e;
+      border: 1px solid #555;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 1em;
+    }
+
+    .modal button {
+      padding: 10px 20px;
+      background: linear-gradient(90deg, #ff9800, #ff5722);
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .modal button:hover {
+      opacity: 0.9;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+    }
+
+    .thank-you {
+      display: none;
+      color: #ff9800;
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Recomendador de Juegos</h1>
+    <p>Selecciona tu estado de ánimo y preferencias para recibir recomendaciones de juegos.</p>
+
+    <label for="mood">¿Cómo te sientes hoy?</label><br>
+    <select id="mood">
+      <option value="relaxing,family-friendly,casual">Relajado 🕊️</option>
+      <option value="hard,fast-paced,competitive">Intenso ⚡</option>
+      <option value="story-rich,atmospheric,emotional">Inmersivo 🌌</option>
+      <option value="sandbox,open-world,simulation">Creativo 🎨</option>
+    </select><br><br>
+
+    <label for="genre">¿Cómo quieres jugar?</label><br>
+    <select id="genre">
+      <option value="story-rich,emotional">Narrativo 📖</option>
+      <option value="open-world,adventure,fantasy">Exploración 🧭</option>
+      <option value="hard,strategy,survival">Desafiante 💪</option>
+      <option value="co-op,multiplayer">Colaborativo 🤝</option>
+      <option value="singleplayer">Individual 🎮</option>
+    </select><br><br>
+
+    <button id="recommendButton">Obtener Recomendación</button>
+
+    <div class="results" id="results"></div>
+  </div>
+
+  <footer>
+    <p>© 2025 Recomendador de Juegos. Todos los derechos reservados.</p>
+    <p>Datos proporcionados por <a href="https://rawg.io/" target="_blank">RAWG.io</a></p>
+    <button id="feedbackButton">Contanos cómo mejorar</button>
+  </footer>
+
+  <div class="modal-overlay" id="modalOverlay"></div>
+
+  <div class="modal" id="feedbackModal">
+    <h3>Deja tus sugerencias</h3>
+    <textarea id="feedbackInput" placeholder="Escribe aquí tus sugerencias..." rows="4"></textarea>
+    <button id="sendFeedbackButton">Enviar</button>
+    <button id="closeModalButton">Cerrar</button>
+  </div>
+
+  <div class="thank-you" id="thankYouMessage">
+    ¡Gracias por tu recomendación! Intentaremos mejorar para la próxima.
+  </div>
+
+  <script>
+    let currentPage = 1; // Estado inicial de la página
+
+    document.getElementById('recommendButton').addEventListener('click', async () => {
+      const mood = document.getElementById('mood').value;
+      const genre = document.getElementById('genre').value;
+
+      const apiKey = '292f3ba4d2294c798bbf1ffe887d450a';
+      const baseUrl = `https://api.rawg.io/api/games?key=${apiKey}&tags=${mood},${genre}&page_size=5`;
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = 'Buscando tus recomendaciones... ⚔️';
+
+      currentPage = 1; // Reiniciar la página al hacer una nueva consulta
+
+      await fetchGames(baseUrl, resultsDiv);
+    });
+
+    async function fetchGames(baseUrl, resultsDiv) {
+      try {
+        const url = `${baseUrl}&page=${currentPage}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          const today = new Date();
+
+          resultsDiv.innerHTML = data.results
+            .filter(game => game.released && new Date(game.released) <= today) // Filtrar juegos lanzados
+            .map(game => `
+              <div class="game-card">
+                <img src="${game.background_image}" alt="Portada de ${game.name}">
+                <div class="game-info">
+                  <p><strong>${game.name}</strong></p>
+                  <p>Plataformas: ${game.platforms.map(p => p.platform.name).join(', ')}</p>
+                </div>
+              </div>
+            `).join('');
+
+          const followUpDiv = document.createElement('div');
+          followUpDiv.innerHTML = `
+            <button id="moreOptionsButton">Más opciones</button>
+          `;
+          resultsDiv.appendChild(followUpDiv);
+
+          // Añadir evento al botón de más opciones
+          document.getElementById('moreOptionsButton').addEventListener('click', async () => {
+            currentPage++; // Incrementar la página para obtener nuevos resultados
+            await fetchGames(baseUrl, resultsDiv);
+          });
+        } else {
+          resultsDiv.innerHTML = 'No se encontraron juegos con esas características. Intenta con menos filtros.';
+        }
+      } catch (error) {
+        resultsDiv.innerHTML = 'Error al conectar con el servidor. Por favor, intenta nuevamente.';
+      }
+    }
+
+    // Modal para retroalimentación
+    const feedbackButton = document.getElementById('feedbackButton');
+    const feedbackModal = document.getElementById('feedbackModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const closeModalButton = document.getElementById('closeModalButton');
+    const sendFeedbackButton = document.getElementById('sendFeedbackButton');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+
+    feedbackButton.addEventListener('click', () => {
+      feedbackModal.style.display = 'block';
+      modalOverlay.style.display = 'block';
+    });
+
+    closeModalButton.addEventListener('click', () => {
+      feedbackModal.style.display = 'none';
+      modalOverlay.style.display = 'none';
+    });
+
+    modalOverlay.addEventListener('click', () => {
+      feedbackModal.style.display = 'none';
+      modalOverlay.style.display = 'none';
+    });
+
+    sendFeedbackButton.addEventListener('click', () => {
+      const feedback = document.getElementById('feedbackInput').value;
+      if (feedback.trim()) {
+        feedbackModal.style.display = 'none';
+        modalOverlay.style.display = 'none';
+        document.getElementById('feedbackInput').value = '';
+        thankYouMessage.style.display = 'block';
+        setTimeout(() => {
+          thankYouMessage.style.display = 'none';
+        }, 5000);
+      } else {
+        alert('Por favor, escribe una sugerencia antes de enviar.');
+      }
+    });
+  </script>
+</body>
+</html>
